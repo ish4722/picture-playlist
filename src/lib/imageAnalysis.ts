@@ -34,8 +34,15 @@ export async function analyzeImageMood(imageFile: File): Promise<{ mood: string;
     return new Promise((resolve, reject) => {
       img.onload = async () => {
         try {
+          // Convert image to canvas for the pipeline
+          const canvas = document.createElement('canvas');
+          const ctx = canvas.getContext('2d');
+          canvas.width = img.width;
+          canvas.height = img.height;
+          ctx?.drawImage(img, 0, 0);
+          
           // Generate caption using the pipeline
-          const results = await pipeline(img);
+          const results = await pipeline(canvas);
           const caption = results[0]?.generated_text || '';
           
           console.log('Generated caption:', caption);
